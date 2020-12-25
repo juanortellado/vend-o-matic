@@ -88,13 +88,44 @@ describe('Vend-O-Matic', () => {
     
     
     describe('DELETE /', () => {
+      
+      it('it should PUT a coin in machine', (done) => {
+          let coin = {
+            coin: 1
+          }
+          
+          chai.request(app)
+              .put('/')
+              .send(coin)
+              .end((err, res) => {
+                res.should.have.status(204);
+                res.should.have.header('X-Coins', 1);
+                done();
+            });
+      });
+        
+      it('it should PUT a second coin in machine', (done) => {
+          let coin = {
+            coin: 1
+          }
+          
+          chai.request(app)
+              .put('/')
+              .send(coin)
+              .end((err, res) => {
+                res.should.have.status(204);
+                res.should.have.header('X-Coins', 2);
+                done();
+            });
+      });
+        
       it('it should DELETE the coins', (done) => {
 
           chai.request(app)
               .delete('/')
               .end((err, res) => {
                 res.should.have.status(204);
-                res.should.have.header('X-Coins', 0);
+                res.should.have.header('X-Coins', 2);
                 done();
         });
       });
@@ -220,7 +251,7 @@ describe('Vend-O-Matic', () => {
             });
         });
         
-        it('it should PUT 6 coins more in machine', (done) => {
+        it('it should PUT 6 coins more in machine, one at a time', (done) => {
           let coin = {
             coin: 1
           }
