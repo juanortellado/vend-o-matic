@@ -1,48 +1,76 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var machine = require("./machine.js");
+var jwt = require('jsonwebtoken');
+var config = require('./config.js')
 
 // instantiate express
 var app = express();
+
+// defines key for json web token
+app.set('key', config.key);
 
 // defines a json body parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// beverages for vend-o-matic machine. For next version this could be 
-let machine = [
-    {
-        name: "Fernet",
-        quantity : 5
-    },
-    {
-        name: "Coke",
-        quantity : 5
-    },
-    {
-        name: "Water",
-        quantity : 5
+
+
+const protectedRoutes = express.Router(); 
+protectedRoutes.use((req, res, next) => {
+    const token = req.headers['access-token'];
+    if (token) {
+        jwt.verify(token, app.get('key'), (err, decoded) => {      
+            if (err) {
+                console.debug(err);
+                return res.status(401).json({ message: 'Invalid token' });    
+            } else {
+                req.decoded = decoded;    
+                next();
+            }
+        });
+    } else {
+      res.status(401).send({ 
+          message: "Didn't send token" 
+      });
     }
-];
+ });
 
-// coins accepted by the machine
-let coinsInMachine = 0;
+app.post('/authenticate', (req, res) => {
+    
+    if(req.body.user === config.user && req.body.pass === config.pass) {
+        const payload = {
+            check:  true
+        };
+        const token = jwt.sign(payload, app.get('key'), {
+            expiresIn: config.expirationTime
+        });
+        res.json({
+            message: 'Success',
+            token: token
+        });
+    } else {
+        res.status(401).json({ message: "Wrong user or password"})
+    }
+})
 
-// number of coins needed to buy
-const coinsToBuy = 2;
+
+
+
 
 // getter for vend-o-matic remaining items
-app.get('/inventory', function(req, res) {    
+app.get('/inventory', protectedRoutes, function(req, res) {    
     
-    //console.debug(machine);
+    //console.debug(machine.beverages());
     
-    res.status(200).json(machine).send();
+    res.status(200).json(machine.beverages()).send();
 });
 
 // defines getter for vend-o-matic remaining item :id
-app.get('/inventory/:id', function(req, res) {
+app.get('/inventory/:id', protectedRoutes, function(req, res) {
     
     // searching for beverage :id
-    const findBeverage = machine.find(beverage => beverage.name === req.params.id);
+    const findBeverage = machine.findBeverage(req.params.id);
     
     // if beverage exists, then findBeverage will be true
     if (findBeverage) {
@@ -51,47 +79,47 @@ app.get('/inventory/:id', function(req, res) {
         res.status(200).json(findBeverage);
     } else {
         // if beverage doesn't exists, return 404 Not found with number of coins accepted
-        res.status(404).set('X-Coins', coinsInMachine);
+        res.status(404).set('X-Coins', machine.getCoinsInMachine());
     }
     res.send();
 });
 
 // put to buy a certain item
-app.put('/inventory/:id', function(req, res) {
+app.put('/inventory/:id', protectedRoutes, function(req, res) {
     
     // Search the beverage by :id
-    var findBeverage = machine.find(beverage => beverage.name === req.params.id);
+    var findBeverage = machine.findBeverage(req.params.id);
     //console.debug("Beverage found: " + findBeverage.name + " " + findBeverage.quantity);
     
     // checking if beverage exists and if there are remaining items
     if (findBeverage && findBeverage.quantity > 0) {
     
         // checking coins balance
-        if (coinsInMachine >= coinsToBuy) {
+        if (machine.getCoinsInMachine() >= machine.getCoinsToBuy()) {
             
             // Collect coins
-            coinsInMachine -= coinsToBuy;
+            machine.collectCoins();
             
             // deliver selected beverage
-            findBeverage.quantity--;
+            machine.deliverBeverage(findBeverage.name);
             
-            res.status(200).set('X-Coins', coinsInMachine)
-                .set('X-Inventory-Remaining', findBeverage.quantity)
+            res.status(200).set('X-Coins', machine.getCoinsInMachine())
+                .set('X-Inventory-Remaining', machine.findBeverage(req.params.id).quantity)
                 .json({'quantity': 1});
         
         } else {
             // funds are insufficient
-            res.status(400).set('X-Coins', coinsInMachine);
+            res.status(400).set('X-Coins', machine.getCoinsInMachine());
         }
     } else {
         // Beverage doesn't exist or there's no stock
-        res.status(404).set('X-Coins', coinsInMachine);
+        res.status(404).set('X-Coins', machine.getCoinsInMachine());
     }
     res.send();
-})
+});
 
 // put to add coin to vend-o-matic
-app.put('/', function(req, res) {
+app.put('/', protectedRoutes, function(req, res) {
     
     // checking if body respects api contract
     if(!req.body.coin || req.body.coin !== 1) {
@@ -101,22 +129,23 @@ app.put('/', function(req, res) {
     } else {
         
         // if it's ok, the coins are accepted
-        coinsInMachine += req.body.coin;
-        //console.debug(coinsInMachine + " coins accepted.")
-        res.status(204).set('X-Coins', coinsInMachine);
+        machine.addCoin(req.body.coin);
+        
+        //console.debug(machine.getCoinsInMachine + " coins accepted.")
+        res.status(204).set('X-Coins', machine.getCoinsInMachine());
     }
     res.send();
 })
 
 // defines delete for vend-o-matic
-app.delete('/', function(req, res) {
+app.delete('/', protectedRoutes, function(req, res) {
     
-    res.status(204).set('X-Coins', coinsInMachine);
+    res.status(204).set('X-Coins', machine.getCoinsInMachine());
     // system log number of coins returned
-    //console.debug(coinsInMachine + " coins returned.")
+    //console.debug(machine.getCoinsInMachine + " coins returned.")
     
     // reset number of coins in machine
-    coinsInMachine = 0;
+    machine.resetCoins();
     res.send();
 })
 

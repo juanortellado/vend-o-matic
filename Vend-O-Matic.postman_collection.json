@@ -12,7 +12,13 @@
 			},
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjA4OTg4OTE2LCJleHAiOjE2MDg5ODkyMTZ9.-EaJwJtyUqYKNSuv-phW949JfDjyekII9irZP8C41Ho",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"name\": \"CaptianBeer\",\n    \"litros\": 10\n}",
@@ -39,7 +45,13 @@
 			"name": "GET_inventory_id",
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjA4OTg4OTE2LCJleHAiOjE2MDg5ODkyMTZ9.-EaJwJtyUqYKNSuv-phW949JfDjyekII9irZP8C41Ho",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "localhost:8080/inventory/:id",
 					"host": [
@@ -53,7 +65,7 @@
 					"variable": [
 						{
 							"key": "id",
-							"value": "Fernet"
+							"value": "Water"
 						}
 					]
 				}
@@ -64,7 +76,13 @@
 			"name": "PUT_coin",
 			"request": {
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjA4OTg4OTE2LCJleHAiOjE2MDg5ODkyMTZ9.-EaJwJtyUqYKNSuv-phW949JfDjyekII9irZP8C41Ho",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
 					"raw": "{\n    \"coin\": 1\n}",
@@ -91,7 +109,13 @@
 			"name": "PUT_inventory_id",
 			"request": {
 				"method": "PUT",
-				"header": [],
+				"header": [
+					{
+						"key": "access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjA4OTg4OTE2LCJleHAiOjE2MDg5ODkyMTZ9.-EaJwJtyUqYKNSuv-phW949JfDjyekII9irZP8C41Ho",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "localhost:8080/inventory/:id",
 					"host": [
@@ -116,7 +140,13 @@
 			"name": "DELETE_coins",
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "access-token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjA4OTg4OTE2LCJleHAiOjE2MDg5ODkyMTZ9.-EaJwJtyUqYKNSuv-phW949JfDjyekII9irZP8C41Ho",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "localhost:8080/",
 					"host": [
@@ -125,6 +155,33 @@
 					"port": "8080",
 					"path": [
 						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST_authenticate",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user\": \"machine\",\n    \"pass\": \"securePass\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/authenticate",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"authenticate"
 					]
 				}
 			},

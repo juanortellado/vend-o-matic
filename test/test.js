@@ -11,182 +11,331 @@ let should = chai.should();
 
 chai.use(chaiHttp);
 
+let token;
+
 describe('Vend-O-Matic', () => {
     
     describe('GET /inventory', () => {
           it('it should GET all the beverages', (done) => {
+            let user = {"user": "machine", "pass": "securePass"};
             chai.request(app)
-                .get('/inventory')
+                .post('/authenticate')
+                .send(user)
                 .end((err, res) => {
-                      res.should.have.status(200);
-                      res.body.should.be.a('array');
-                      res.body.length.should.be.eql(3);
-                  done();
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    res.body.should.have.property('token');
+                    
+                    chai.request(app)
+                        .get('/inventory')
+                        .set('access-token', res.body.token)
+                        .end((err, res) => {
+                          res.should.have.status(200);
+                          res.body.should.be.a('array');
+                          res.body.length.should.be.eql(3);
+                      done();
+                    });
                 });
           });
       });
     
     describe('GET /inventory/:id', () => {
-      it('it should GET Fernet by the given id', (done) => {
-          let beverage = {name: 'Fernet', quantity: 5}
-          chai.request(app)
-            .get('/inventory/' + beverage.name)
-            .end((err, res) => {
-                  res.should.have.status(200);
-                  res.body.should.be.a('object');
-                  res.body.should.have.property('name');
-                  res.body.should.have.property('quantity');
-                  res.body.should.have.property('name').eql(beverage.name);
-                  res.body.should.have.property('quantity').eql(beverage.quantity);
-              done();
+      
+        
+        it('it should GET Fernet by the given id', (done) => {
+            let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+                .post('/authenticate')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    res.body.should.have.property('token');
+                    
+            
+                  let beverage = {name: 'Fernet', quantity: 5}
+                  chai.request(app)
+                    .get('/inventory/' + beverage.name)
+                    .set('access-token', res.body.token)
+                    .end((err, res) => {
+                          res.should.have.status(200);
+                          res.body.should.be.a('object');
+                          res.body.should.have.property('name');
+                          res.body.should.have.property('quantity');
+                          res.body.should.have.property('name').eql(beverage.name);
+                          res.body.should.have.property('quantity').eql(beverage.quantity);
+                      done();
+                    });
             });
       });
      
         it('it should GET Coke by the given id', (done) => {
-          let beverage = {name: 'Coke', quantity: 5}
-          chai.request(app)
-            .get('/inventory/' + beverage.name)
-            .end((err, res) => {
-                  res.should.have.status(200);
-                  res.body.should.be.a('object');
-                  res.body.should.have.property('name');
-                  res.body.should.have.property('quantity');
-                  res.body.should.have.property('name').eql(beverage.name);
-                  res.body.should.have.property('quantity').eql(beverage.quantity);
-              done();
+            let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+                .post('/authenticate')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    res.body.should.have.property('token');
+                    
+              
+                let beverage = {name: 'Coke', quantity: 5}
+                chai.request(app)
+                .get('/inventory/' + beverage.name)
+                .set('access-token', res.body.token)
+                .end((err, res) => {
+                      res.should.have.status(200);
+                      res.body.should.be.a('object');
+                      res.body.should.have.property('name');
+                      res.body.should.have.property('quantity');
+                      res.body.should.have.property('name').eql(beverage.name);
+                      res.body.should.have.property('quantity').eql(beverage.quantity);
+                  done();
+                });
             });
       });
         
         it('it should GET Water by the given id', (done) => {
-          let beverage = {name: 'Water', quantity: 5}
-          chai.request(app)
-            .get('/inventory/' + beverage.name)
-            .end((err, res) => {
-                  res.should.have.status(200);
-                  res.body.should.be.a('object');
-                  res.body.should.have.property('name');
-                  res.body.should.have.property('quantity');
-                  res.body.should.have.property('name').eql(beverage.name);
-                  res.body.should.have.property('quantity').eql(beverage.quantity);
-              done();
+            let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+                .post('/authenticate')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    res.body.should.have.property('token');
+                
+                let beverage = {name: 'Water', quantity: 5}
+                chai.request(app)
+                    .get('/inventory/' + beverage.name)
+                    .set('access-token', res.body.token)
+                    .end((err, res) => {
+                          res.should.have.status(200);
+                          res.body.should.be.a('object');
+                          res.body.should.have.property('name');
+                          res.body.should.have.property('quantity');
+                          res.body.should.have.property('name').eql(beverage.name);
+                          res.body.should.have.property('quantity').eql(beverage.quantity);
+                      done();
+                });
             });
       });
         
         it('it should throw not found', function (done) {
-            
-            let beverage = {name: 'Pepsi', quantity: 5};
+            let user = {"user": "machine", "pass": "securePass"};
             chai.request(app)
-                .get('/inventory/' + beverage.name)
+                .post('/authenticate')
+                .send(user)
                 .end((err, res) => {
-                    if (err) {   
-                        res.should.have.status(404);
-                    }
-                    done();
-                });
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    res.body.should.have.property('token');
+                
+                    let beverage = {name: 'Pepsi', quantity: 5};
+                    chai.request(app)
+                        .get('/inventory/' + beverage.name)
+                        .set('access-token', res.body.token)
+                        .end((err, res) => {
+                            if (err) {   
+                                res.should.have.status(404);
+                            }
+                            done();
+                        });
+            });
         });
     });
-    
-    
+     
     describe('DELETE /', () => {
       
       it('it should PUT a coin in machine', (done) => {
-          let coin = {
-            coin: 1
-          }
-          
+          let user = {"user": "machine", "pass": "securePass"};
           chai.request(app)
-              .put('/')
-              .send(coin)
+              .post('/authenticate')
+              .send(user)
               .end((err, res) => {
-                res.should.have.status(204);
-                res.should.have.header('X-Coins', 1);
-                done();
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.should.have.property('token');
+                
+                let coin = {
+                    coin: 1
+                }
+                chai.request(app)
+                    .put('/')
+                    .send(coin)
+                    .set('access-token', res.body.token)
+                    .end((err, res) => {
+                        res.should.have.status(204);
+                        res.should.have.header('X-Coins', 1);
+                        done();
+                    });
             });
       });
         
       it('it should PUT a second coin in machine', (done) => {
-          let coin = {
-            coin: 1
-          }
-          
+          let user = {"user": "machine", "pass": "securePass"};
           chai.request(app)
-              .put('/')
-              .send(coin)
+              .post('/authenticate')
+              .send(user)
               .end((err, res) => {
-                res.should.have.status(204);
-                res.should.have.header('X-Coins', 2);
-                done();
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.should.have.property('token');
+          
+                let coin = {
+                    coin: 1
+                }
+                chai.request(app)
+                  .put('/')
+                  .send(coin)
+                  .set('access-token', res.body.token)
+                  .end((err, res) => {
+                    res.should.have.status(204);
+                    res.should.have.header('X-Coins', 2);
+                    done();
+                });
             });
       });
         
       it('it should DELETE the coins', (done) => {
-
+          let user = {"user": "machine", "pass": "securePass"};
           chai.request(app)
-              .delete('/')
+              .post('/authenticate')
+              .send(user)
               .end((err, res) => {
-                res.should.have.status(204);
-                res.should.have.header('X-Coins', 2);
-                done();
-        });
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.should.have.property('token');
+              
+                  chai.request(app)
+                      .delete('/')
+                      .set('access-token', res.body.token)
+                      .end((err, res) => {
+                        res.should.have.status(204);
+                        res.should.have.header('X-Coins', 2);
+                        done();
+                    });
+            });
       });
     });
     
     describe('PUT /', () => {
       it('it should PUT a coin in machine', (done) => {
-          let coin = {
-            coin: 1
-          }
-          
+          let user = {"user": "machine", "pass": "securePass"};
           chai.request(app)
-              .put('/')
-              .send(coin)
+              .post('/authenticate')
+              .send(user)
               .end((err, res) => {
-                res.should.have.status(204);
-                res.should.have.header('X-Coins', 1);
-                done();
-            });
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.should.have.property('token');
+          
+                  let coin = {
+                    coin: 1
+                  }
+                  chai.request(app)
+                      .put('/')
+                      .send(coin)
+                      .set('access-token', res.body.token)
+                      .end((err, res) => {
+                        res.should.have.status(204);
+                        res.should.have.header('X-Coins', 1);
+                        done();
+                    });
+          });
       });
         
         it('it should not PUT four coins in machine', (done) => {
-          let coin = {
-            coin: 4
-          }
-          
-          chai.request(app)
-              .put('/')
-              .send(coin)
+            let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+              .post('/authenticate')
+              .send(user)
               .end((err, res) => {
-                res.should.have.status(400);
+                res.should.have.status(200);
                 res.body.should.be.a('object');
                 res.body.should.have.property('message');
-                done();
+                res.body.should.have.property('token');
+
+                let coin = {
+                    coin: 4
+                }
+                chai.request(app)
+                  .put('/')
+                  .send(coin)
+                  .set('access-token', res.body.token)
+                  .end((err, res) => {
+                    res.should.have.status(400);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    done();
+                });
             });
       });
         
         it('it should PUT a second coin in machine', (done) => {
-          let coin = {
-            coin: 1
-          }
-          
-          chai.request(app)
-              .put('/')
-              .send(coin)
+          let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+              .post('/authenticate')
+              .send(user)
               .end((err, res) => {
-                res.should.have.status(204);
-                res.should.have.header('X-Coins', 2);
-                done();
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.should.have.property('token');
+                
+                let coin = {
+                    coin: 1
+                }
+          
+                chai.request(app)
+                  .put('/')
+                  .send(coin)
+                  .set('access-token', res.body.token)
+                  .end((err, res) => {
+                    res.should.have.status(204);
+                    res.should.have.header('X-Coins', 2);
+                    done();
+                });
             });
         });
     });
-    
-    
-    describe('PUT /inventory/:id', () => {
+       
+    describe('PUT /inventory/:id using same token', () => {
         
-        it('it should buy a Coke', (done) => {
+        it('it should get a Token', (done) => {
+            let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+              .post('/authenticate')
+              .send(user)
+              .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message');
+                res.body.should.have.property('token');
+                
+                token = res.body.token;
+                done();
+            });
+        });
+        
+        
+        
+        it('it should buy a Coke', (done) => {            
             let beverage = 'Coke';
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(200);
                 res.should.have.header('X-Coins', 0);
@@ -203,6 +352,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(400);
                 res.should.have.header('X-Coins', 0);
@@ -218,6 +368,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 1);
@@ -232,6 +383,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 2);
@@ -244,6 +396,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(404);
                 res.should.have.header('X-Coins', 2);
@@ -258,6 +411,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 3);
@@ -265,6 +419,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 4);
@@ -272,6 +427,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 5);
@@ -279,6 +435,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 6);
@@ -286,6 +443,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 7);
@@ -293,6 +451,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 8);
@@ -305,6 +464,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(200);
                 res.should.have.header('X-Coins', 6);
@@ -320,6 +480,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(200);
                 res.should.have.header('X-Coins', 4);
@@ -335,6 +496,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(200);
                 res.should.have.header('X-Coins', 2);
@@ -350,6 +512,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(200);
                 res.should.have.header('X-Coins', 0);
@@ -370,6 +533,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 1);
@@ -384,6 +548,7 @@ describe('Vend-O-Matic', () => {
           chai.request(app)
               .put('/')
               .send(coin)
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(204);
                 res.should.have.header('X-Coins', 2);
@@ -395,6 +560,7 @@ describe('Vend-O-Matic', () => {
             chai.request(app)
               .put('/inventory/' + beverage)
               .send()
+              .set('access-token', token)
               .end((err, res) => {
                 res.should.have.status(404);
                 res.should.have.header('X-Coins', 2);
