@@ -2,7 +2,13 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var machine = require("./machine.js");
 var jwt = require('jsonwebtoken');
-var config = require('./config.js')
+var config = require('./config.js');
+
+//var https = require('https');
+//var privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
+//var certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+
+//var credentials = {key: privateKey, cert: certificate};
 
 // instantiate express
 var app = express();
@@ -15,36 +21,48 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
-
+// function to secure every endpoint with JWT
 const protectedRoutes = express.Router(); 
 protectedRoutes.use((req, res, next) => {
+    // validate if token it's present on request
     const token = req.headers['access-token'];
     if (token) {
+        // token validation 
         jwt.verify(token, app.get('key'), (err, decoded) => {      
             if (err) {
-                console.debug(err);
+                // console.debug(err);
                 return res.status(401).json({ message: 'Invalid token' });    
             } else {
+                // token it's ok, continue invocation
                 req.decoded = decoded;    
                 next();
             }
         });
     } else {
-      res.status(401).send({ 
-          message: "Didn't send token" 
-      });
+        res.status(401).send({ 
+            message: "Didn't send token" 
+        });
     }
  });
 
+// post to get json web token
 app.post('/authenticate', (req, res) => {
     
+    // it authenticates using user and password from request on plain text
     if(req.body.user === config.user && req.body.pass === config.pass) {
+        
+        // valid credentials
         const payload = {
             check:  true
         };
+        
+        // create token
         const token = jwt.sign(payload, app.get('key'), {
+            // set token expiration time in seconds
             expiresIn: config.expirationTime
         });
+        
+        // answers token
         res.json({
             message: 'Success',
             token: token
@@ -52,11 +70,7 @@ app.post('/authenticate', (req, res) => {
     } else {
         res.status(401).json({ message: "Wrong user or password"})
     }
-})
-
-
-
-
+});
 
 // getter for vend-o-matic remaining items
 app.get('/inventory', protectedRoutes, function(req, res) {    
@@ -153,6 +167,9 @@ app.delete('/', protectedRoutes, function(req, res) {
 app.listen(8080, () => {
  console.log("Server started on port 8080");
 });
+
+//var httpsServer = https.createServer(credentials, app);
+//httpsServer.listen(8443);
 
 // Export our app for testing purposes
 module.exports = app; // for testing

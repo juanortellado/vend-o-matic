@@ -15,8 +15,68 @@ let token;
 
 describe('Vend-O-Matic', () => {
     
+    describe('POST /authenticate errors', () => {
+        
+        it('it should not authenticate', (done) => {
+            let user = {"user": "user", "pass": "pas"};
+            chai.request(app)
+                .post('/authenticate')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(401);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    done();
+                });
+          });
+        
+        it('it should authenticate but do not send token to endpoint', (done) => {
+            let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+                .post('/authenticate')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    res.body.should.have.property('token');
+                
+                    chai.request(app)
+                        .get('/inventory')
+                        .end((err, res) => {
+                          res.should.have.status(401);
+                          res.body.should.have.property('message');
+                      done();
+                    });
+                });
+          });
+        
+          it('it should authenticate but do not send correct token to endpoint', (done) => {
+            let user = {"user": "machine", "pass": "securePass"};
+            chai.request(app)
+                .post('/authenticate')
+                .send(user)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message');
+                    res.body.should.have.property('token');
+                
+                    chai.request(app)
+                        .get('/inventory')
+                        .set('access-token', "token")
+                        .end((err, res) => {
+                          res.should.have.status(401);
+                          res.body.should.have.property('message');
+                      done();
+                    });
+                });
+          });
+      });
+    
     describe('GET /inventory', () => {
-          it('it should GET all the beverages', (done) => {
+        
+        it('it should GET all the beverages', (done) => {
             let user = {"user": "machine", "pass": "securePass"};
             chai.request(app)
                 .post('/authenticate')
