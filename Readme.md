@@ -11,6 +11,7 @@ The API was developed with _Node.js_ and _Express_, and for unitary tests, the _
 |   +-- test.js
 +-- vend-o-matic.js
 +-- machine.js
++-- config.js
 +-- Readme.md
 ```
 Business logic it's implemented by vend-o-matic.js, meanwhile machine.js implements management over vend-o-matic data, making it possible to change data source transparently for business logic. Also, data from business treats separate from configuration data.
