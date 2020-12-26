@@ -7,27 +7,15 @@
 	"item": [
 		{
 			"name": "GET_inventory",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"method": "GET",
 				"header": [
 					{
 						"key": "access-token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjA4OTg4OTE2LCJleHAiOjE2MDg5ODkyMTZ9.-EaJwJtyUqYKNSuv-phW949JfDjyekII9irZP8C41Ho",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjaGVjayI6dHJ1ZSwiaWF0IjoxNjA5MDAyODkxLCJleHAiOjE2MDkwMDMxOTF9.oCrt9FF4XIG7ChNatXJLlVh9peln0KQkiOVMFpSAwFk",
 						"type": "text"
 					}
 				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"CaptianBeer\",\n    \"litros\": 10\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
 					"raw": "localhost:8080/inventory",
 					"host": [
