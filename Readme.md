@@ -23,7 +23,7 @@ According to vending constraints, it is indicated that only one coin will be ent
 
 For development purposes, API entities like beverages, coins, coins needed to buy, are handled in memory just to keep it simple but it's recommended to be implemented with a DB.
 
-It is assumed to run within a safe environment of the vending machine. However, it's implemented to use security tokens, particularly JWT, but it's a really basic implementation so has several points to improve.
+It is assumed to run within a safe environment of the vending machine. However, it's implemented to use security tokens, particularly JWT, but it's a really basic implementation so has several points to improve. Tokens expire after 5 minutes but can be easily modified on _expirationTime_ parameter.
 
 ## Execution
 First of all, it’s necessary to execute installation modules for _Node.js_ and _Express_.
@@ -62,5 +62,6 @@ node vend-o-matic.js &
 In order to implement a better service, there are identified some points that could be improved.
 - Controls should be applied when performing beverage delivery operations or handling coins, to ensure consistency in case of failure (ACID transactions).
 - A DB can be modeled for coins and stock of beverages management. This should bring transaction guarantees if the system goes down. 
-- For better security purposes, it's highly recommended to use HTTPS.
+- For better security purposes, it's highly recommended to use HTTPS. User credentials must be encoded and stored in DB, instead of hardcoded :(.
+- JWT tokens and keys must be stored in DB.
 - Like it’s said before, entities could be implemented in a DB. Also, parameters like coins needed to buy could be saved on DB or a configuration file, making service more flexible with functional changes.
